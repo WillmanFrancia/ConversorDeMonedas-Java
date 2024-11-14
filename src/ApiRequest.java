@@ -3,22 +3,23 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class ApiRequest {
-
-    String apiKey = "17425e3a73150df61188b316";
-    // Setting URL
-    String url_str = "https://v6.exchangerate-api.com/v6/" + apiKey + "/latest/USD";
-
-    Gson gson = new Gson();
+    String apiKey = "";
+    public Double CurrencyRequest(String currency, String toChangeCurrency) {
 
 
+        // Setting URL
+        String url_str = "https://v6.exchangerate-api.com/v6/" + apiKey + "/latest/" + currency;
 
-    public void CurrencyRequest() {
+        Gson gson = new Gson();
+
+        Double changeCurrency = 0.0;
         try {
             // Making Request
             URL url = new URL(url_str);
@@ -32,13 +33,14 @@ public class ApiRequest {
 
             // Accessing object
             JsonObject subProperty = jsonobj.getAsJsonObject("conversion_rates");
-            double usdRate = subProperty.get("PEN").getAsDouble();
+            double usdRate = subProperty.get(currency).getAsDouble();
 
             Moneda moneda = gson.fromJson(root, Moneda.class);
-            System.out.println(moneda.conversion_rates().get("PEN"));
+            changeCurrency = moneda.conversion_rates().get(toChangeCurrency);
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (NumberFormatException | IOException e) {
+            System.out.println("You must choose a number");
         }
+        return changeCurrency;
     }
 }
